@@ -1,32 +1,32 @@
 'use strict';
-const Time = require('../models/timeModel');
-exports.get_all_times = (req, res) => {
-  Time.getAllTimes((err, times) => {
+const Exercise = require('../models/exerciseModel.ts');
+exports.get_all_exercises = (req, res) => {
+  Exercise.getAllExercises((err, exercises) => {
     if (err) res.send(err);
-    res.send(times);
+    res.send(exercises);
   });
 };
-exports.create_new_time = (req, res) => {
-  var new_time = new Time(req.body);
-  Time.createTime(new_time, (err, time) => {
+exports.create_new_exercise = (req, res) => {
+  var new_exercise = new Exercise(req.body);
+  Exercise.createExercise(new_exercise, (err, exercise) => {
     if (err) res.send(err);
   });
 };
-exports.get_detail_time = (req, res) => {
-  Time.getDetailTime(req.params.id, (err, time) => {
+exports.get_detail_exercise = (req, res) => {
+  Exercise.getDetailExercise(req.params.id, (err, exercise) => {
     if (err) res.send(err);
-    res.send(time);
+    res.send(exercise);
   });
 };
-exports.delete_time = (req, res) => {
-  Time.deleteTime(req.params.id, (err, time) => {
+exports.delete_exercise = (req, res) => {
+  Exercise.deleteExercise(req.params.id, (err, exercise) => {
     if (err) res.send(err);
-    res.json('Time have been deleted');
+    res.json('Exercise have been deleted');
   });
 };
-exports.update_time = (req, res) => {
-  Time.updateTime(req.body, (err, time) => {
+exports.update_exercise = (req, res) => {
+  Exercise.updateExercise(req.body, (err, exercise) => {
     if (err) res.send(err);
-    res.json('Time have been updated');
+    res.json('Exercise have been updated');
   });
 };
