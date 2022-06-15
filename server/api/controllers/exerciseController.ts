@@ -10,6 +10,7 @@ exports.create_new_exercise = (req, res) => {
   var new_exercise = new Exercise(req.body);
   Exercise.createExercise(new_exercise, (err, exercise) => {
     if (err) res.send(err);
+    res.json('Exercise have been added');
   });
 };
 exports.get_detail_exercise = (req, res) => {
@@ -25,7 +26,7 @@ exports.delete_exercise = (req, res) => {
   });
 };
 exports.update_exercise = (req, res) => {
-  Exercise.updateExercise(req.body, (err, exercise) => {
+  Exercise.updateExercise(req.body, req.params.id, (err, exercise) => {
     if (err) res.send(err);
     res.json('Exercise have been updated');
   });
