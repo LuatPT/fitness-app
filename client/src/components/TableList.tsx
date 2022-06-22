@@ -25,8 +25,8 @@ type GymExercise = {
   name: string,
   image: string,
   amount: number,
-  rep: number,
-  set: number,
+  reps: number,
+  sets: number,
   price: number,
   history: Array<History>
 }
@@ -41,28 +41,40 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   const { row } = props;
     
   const amountValue = React.useRef();
-  const repValue = React.useRef();
+  const repsValue = React.useRef();
   const setValue = React.useRef();
   const [open, setOpen] = useState(false);
   const [state, setState] = useState(row.amount);
-  const [formData, setFormData] = useState({amount: row.amount,rep: row.rep,set: row.set});
+  const [formData, setFormData] = useState(row);
 
   useEffect(() => {
-    console.log('Form data updated', formData)
+    // console.log('Form data updated', formData)
   }, [formData])
 
- const updateFormData = async (e) => {  
+ const updateFormData = (e) => {  
     e.preventDefault()  
-    await setFormData({...formData, amount: parseInt(amountValue.current.value), rep: parseInt(repValue.current.value), set: parseInt(setValue.current.value) })
+    setFormData({...formData, amount: parseInt(amountValue.current.value), reps: parseInt(repsValue.current.value), sets: parseInt(setValue.current.value) })
     // console.log("amountValue.current.value" +amountValue.current.value)
-    // updateData( {amount: amountValue.current.value, rep: repValue.current.value, set: setValue.current.value})
+    updateData( {amount: amountValue.current.value, reps: repsValue.current.value, sets: setValue.current.value})
   }
 
   //Mock to test- update when have backend
   const updateData = (formDataValue) => {
-    axios.put("")
+    console.log(row)
+    const exercise = {
+            ...row,
+      amount: formDataValue.amount,
+      reps: formDataValue.reps,
+      sets: formDataValue.sets,
+    }
+    console.log(exercise)
+    axios({
+      method: 'put',
+      url: 'http://localhost:3002/api/v1/exercises/'+ row.id,
+      data: exercise
+    });
   }
-  console.log(formData)
+  
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -83,10 +95,10 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
           <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.amount} inputRef={amountValue}/>
         </TableCell>
         <TableCell align="right">
-          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.rep} inputRef={repValue}/>
+          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.reps} inputRef={repsValue}/>
         </TableCell>
         <TableCell align="right">
-          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.set} inputRef={setValue}/>
+          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.sets} inputRef={setValue}/>
         </TableCell>
         <TableCell align="right">
             <IconButton color="primary" aria-label="Update" onClick={(updateFormData)}>
@@ -143,10 +155,11 @@ const TableList = () => {
   const [exercises,setExercises] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-        const response = await axios.get("http://localhost:8000/exercise").then((response) =>setExercises(response.data)) ;
+        const response = await axios.get("http://localhost:3002/api/v1/exercises").then((response) =>setExercises(response.data)) 
     };
     fetchData();
 }, []);
+
   return (
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">

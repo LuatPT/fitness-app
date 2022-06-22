@@ -38,8 +38,8 @@ Exercise.deleteExercise = (id, result) => {
   });
 };
 Exercise.updateExercise = (newExercise, id, result) => {
-  var sql = 'UPDATE exercises SET reps = ?, sets = ? WHERE id = ?';
-  db.query(sql, [parseInt(newExercise.reps), parseInt(newExercise.sets), parseInt(id)], (err, response) => {
+  var sql = 'UPDATE exercises SET amount = ?, reps = ?, sets = ? WHERE id = ?';
+  db.query(sql, [parseInt(newExercise.amount) ,parseInt(newExercise.reps),   parseInt(newExercise.sets), parseInt(id)], (err, response) => {
     if (err) result(err, null);
     result(null, "OK");
   });
