@@ -19,6 +19,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Image from 'next/image';
 import TextField from '@mui/material/TextField';
 import axios from "axios";
+import CommonAlert from './common/CommonAlert';
 
 type GymExercise = {
   id: number,
@@ -38,13 +39,12 @@ type History = {
 }
 
 const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
-  const { row } = props;
+  const { row, setAlertInfo } = props;
     
   const amountValue = React.useRef();
   const repsValue = React.useRef();
   const setValue = React.useRef();
   const [open, setOpen] = useState(false);
-  const [state, setState] = useState(row.amount);
   const [formData, setFormData] = useState(row);
 
   useEffect(() => {
@@ -52,29 +52,34 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   }, [formData])
 
  const updateFormData = (e) => {  
-    e.preventDefault()  
+    e.preventDefault();
     setFormData({...formData, amount: parseInt(amountValue.current.value), reps: parseInt(repsValue.current.value), sets: parseInt(setValue.current.value) })
-    // console.log("amountValue.current.value" +amountValue.current.value)
     updateData( {amount: amountValue.current.value, reps: repsValue.current.value, sets: setValue.current.value})
   }
 
-  //Mock to test- update when have backend
   const updateData = (formDataValue) => {
-    console.log(row)
     const exercise = {
             ...row,
       amount: formDataValue.amount,
       reps: formDataValue.reps,
       sets: formDataValue.sets,
     }
-    console.log(exercise)
     axios({
       method: 'put',
       url: 'http://localhost:3002/api/v1/exercises/'+ row.id,
       data: exercise
-    });
+    }).then (() => setAlertInfo({actionType: "UPDATE", color: "success", message: "Update item in "+ row.id+ " successfully !!!" }) )
   }
   
+  const deleteFormData = () => {
+    console.log("ZOOOO")
+    setAlertInfo({actionType: "DELETE", color: "info", message: "Delete item in "+ row.id+ " successfully !!!" })
+    axios({
+      method: 'delete',
+      url: 'http://localhost:3002/api/v1/exercises/'+ row.id
+    }).then (() => setAlertInfo({actionType: "DELETE", color: "info", message: "Delete item in "+ row.id+ " successfully !!!" }) )
+  }
+
   return (
     <React.Fragment>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
@@ -101,10 +106,10 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
           <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.sets} inputRef={setValue}/>
         </TableCell>
         <TableCell align="right">
-            <IconButton color="primary" aria-label="Update" onClick={(updateFormData)}>
+            <IconButton color="primary" aria-label="Update" onClick={updateFormData}>
               <EditIcon />
             </IconButton>
-            <IconButton color="secondary" aria-label="Delete">
+            <IconButton color="secondary" aria-label="Delete" onClick={deleteFormData}>
                <DeleteIcon />
             </IconButton>
         </TableCell>
@@ -153,6 +158,11 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
 const TableList = () => {
   
   const [exercises,setExercises] = useState([]);
+  const [alertInfo,setAlertInfo] = useState({
+    actionType:"",
+    color: "",
+    message: ""
+  });
   useEffect(() => {
     const fetchData = async () => {
         const response = await axios.get("http://localhost:3002/api/v1/exercises").then((response) =>setExercises(response.data)) 
@@ -161,6 +171,9 @@ const TableList = () => {
 }, []);
 
   return (
+    <div>
+      
+    <CommonAlert {...alertInfo} />
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
@@ -176,11 +189,12 @@ const TableList = () => {
         </TableHead>
         <TableBody>
           {exercises.map((row) => (
-            <Row key={row.name} row={row} />
+            <Row key={row.name} row={row} setAlertInfo={setAlertInfo}/>
           ))}
         </TableBody>
       </Table>
     </TableContainer>
+    </div>
   );
 }
 
