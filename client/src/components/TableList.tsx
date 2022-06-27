@@ -20,6 +20,7 @@ import Image from 'next/image';
 import TextField from '@mui/material/TextField';
 import axios from "axios";
 import CommonAlert from './common/CommonAlert';
+import DateTimePickers from './common/DateTimePickers';
 
 type GymExercise = {
   id: number,
@@ -47,9 +48,9 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(row);
 
-  useEffect(() => {
+  // useEffect(() => {
     // console.log('Form data updated', formData)
-  }, [formData])
+  // }, [formData])
 
  const updateFormData = (e) => {  
     e.preventDefault();
@@ -72,7 +73,6 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   }
   
   const deleteFormData = () => {
-    console.log("ZOOOO")
     setAlertInfo({actionType: "DELETE", color: "info", message: "Delete item in "+ row.id+ " successfully !!!" })
     axios({
       method: 'delete',
@@ -82,8 +82,8 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
 
   return (
     <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }}>
-        <TableCell>
+      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={()=> setOpen(!open)}>
+        {/* <TableCell>
           <IconButton
             aria-label="expand row"
             size="small"
@@ -91,7 +91,7 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
           >
             {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
           </IconButton>
-        </TableCell>
+        </TableCell> */}
         <TableCell component="th" scope="row">
           {row.name}
         </TableCell>
@@ -172,19 +172,18 @@ const TableList = () => {
 
   return (
     <div>
-      
+    <DateTimePickers />
     <CommonAlert {...alertInfo} />
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
         <TableHead>
           <TableRow>
-            <TableCell />
             <TableCell>Exercise</TableCell>
-            <TableCell align="right">Image</TableCell>
-            <TableCell align="right">Amount&nbsp;(lbs)</TableCell>
-            <TableCell align="right">Rep</TableCell>
-            <TableCell align="right">Set</TableCell>
-            <TableCell align="right">Action</TableCell>
+            <TableCell align="center">Image</TableCell>
+            <TableCell align="center">Amount&nbsp;(lbs)</TableCell>
+            <TableCell align="center">Rep</TableCell>
+            <TableCell align="center">Set</TableCell>
+            <TableCell align="center">Action</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
