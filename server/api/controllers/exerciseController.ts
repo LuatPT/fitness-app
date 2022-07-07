@@ -6,6 +6,16 @@ exports.get_all_exercises = (req, res) => {
     res.send(exercises);
   });
 };
+
+exports.get_exercises_by_date = (req, res) => {
+  Exercise.getExercisesByDate(req.query.creatAt, (err, exercises) => {
+    if (err) res.send(err);
+    console.log(exercises);
+
+    res.send(exercises);
+  });
+};
+
 exports.create_new_exercise = (req, res) => {
   var new_exercise = new Exercise(req.body);
   Exercise.createExercise(new_exercise, (err, exercise) => {

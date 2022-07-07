@@ -1,28 +1,29 @@
 import * as React from 'react';
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
-import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
-export default function DateTimePickers() {
+export default function DateTimePickers(props) {
   const [value, setValue] = React.useState<Date | null>(
     new Date(),
   );
 
-  const handleChange = (newValue: Date | null) => {
-    setValue(newValue);
+  const handleChangeDatePicker = (newValue: Date | null) => {
+     setValue(newValue);
+    props.handleChange(newValue)
   };
 
   return (
     <div className="container" style={{maxWidth: "500px"}}>
-    <LocalizationProvider dateAdapter={AdapterMoment }>
+    <LocalizationProvider dateAdapter={AdapterDateFns }>
       <Stack spacing={3}>
         <DesktopDatePicker
           label="Day"
-          inputFormat="MM/dd/yyyy"
+          inputFormat="dd/MM/yyyy"
           value={value}
-          onChange={handleChange}
+          onChange={handleChangeDatePicker}
           renderInput={(params) => <TextField {...params} />}
         />
       </Stack>

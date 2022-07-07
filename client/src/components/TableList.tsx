@@ -48,10 +48,6 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState(row);
 
-  // useEffect(() => {
-    // console.log('Form data updated', formData)
-  // }, [formData])
-
  const updateFormData = (e) => {  
     e.preventDefault();
     setFormData({...formData, amount: parseInt(amountValue.current.value), reps: parseInt(repsValue.current.value), sets: parseInt(setValue.current.value) })
@@ -153,26 +149,45 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
   );
  }
 
-
+ const getDateFromNow = (date:Date) =>{
+  const yyyy = date.getFullYear();
+  let mm = date.getMonth() + 1; // Months start at 0!
+  let dd = date.getDate();
+  
+  if (dd < 10) dd = '0' + dd;
+  if (mm < 10) mm = '0' + mm;
+  
+  return yyyy +'-'+ mm + '-'+ dd ;
+}
 
 const TableList = () => {
   
   const [exercises,setExercises] = useState([]);
+  
+  const today = getDateFromNow(new Date());
+
+  const [createAt,setCreateAt] = useState(today);
   const [alertInfo,setAlertInfo] = useState({
     actionType:"",
     color: "",
     message: ""
   });
+
   useEffect(() => {
     const fetchData = async () => {
-        const response = await axios.get("http://localhost:3002/api/v1/exercises").then((response) =>setExercises(response.data)) 
+        const response = await axios.get("http://localhost:3002/api/v1/exercisesByDate?creatAt="+createAt).then((response) =>setExercises(response.data))
+        .then(() => console.log(exercises));
     };
     fetchData();
-}, []);
+    
+  }, [createAt]);
 
+  const handleChange = (date) => {
+    setCreateAt(getDateFromNow(date))
+  }
   return (
     <div>
-    <DateTimePickers />
+    <DateTimePickers handleChange={handleChange} />
     <CommonAlert {...alertInfo} />
     <TableContainer component={Paper}>
       <Table aria-label="collapsible table">
@@ -187,9 +202,9 @@ const TableList = () => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {exercises.map((row) => (
+          {exercises.length ? exercises.map((row) => (
             <Row key={row.name} row={row} setAlertInfo={setAlertInfo}/>
-          ))}
+          )) : null}
         </TableBody>
       </Table>
     </TableContainer>
