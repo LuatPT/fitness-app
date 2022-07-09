@@ -32,7 +32,7 @@ const ExerciseChart = (props) => {
       },
       title: {
         display: true,
-        text: 'Exercise',
+        text: 'Exercise Analytics',
       },
     },
   };

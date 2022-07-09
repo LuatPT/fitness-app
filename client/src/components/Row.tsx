@@ -68,7 +68,7 @@ const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
 
   return (
     <React.Fragment>
-      <ExerciseModal code={row.code} open={open} handleClose={()=> setOpen(false) }/>
+      <ExerciseModal code={row.code} name={row.name} open={open} handleClose={()=> setOpen(false) }/>
       <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={()=> setOpen(!open)}>
         <TableCell component="th" scope="row">
           {row.name}
