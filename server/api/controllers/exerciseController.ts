@@ -10,8 +10,13 @@ exports.get_all_exercises = (req, res) => {
 exports.get_exercises_by_date = (req, res) => {
   Exercise.getExercisesByDate(req.query.creatAt, (err, exercises) => {
     if (err) res.send(err);
-    console.log(exercises);
+    res.send(exercises);
+  });
+};
 
+exports.get_exercises_analytics = (req, res) => {
+  Exercise.getExercisesAnalytics(req.params.code, (err, exercises) => {
+    if (err) res.send(err);
     res.send(exercises);
   });
 };

@@ -6,13 +6,14 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
 
 export default function DateTimePickers(props) {
+  const {handleChange} = props;
   const [value, setValue] = React.useState<Date | null>(
     new Date(),
   );
 
-  const handleChangeDatePicker = (newValue: Date | null) => {
-     setValue(newValue);
-    props.handleChange(newValue)
+  const handleChangeDatePicker =  (newValue: Date | null) => {
+    setValue(newValue);
+    handleChange(newValue) 
   };
 
   return (

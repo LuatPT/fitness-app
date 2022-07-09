@@ -7,6 +7,9 @@ var Exercise = function (exercise) {
   this.amount = exercise.amount;
   this.reps = exercise.reps;
   this.sets = exercise.sets;
+  this.user_name = exercise.user_name;
+  this.code = exercise.code;
+  this.create_at = exercise.create_at;
 };
 Exercise.getAllExercises = (result) => {
   const sql = "SELECT * FROM exercises";
@@ -20,6 +23,15 @@ Exercise.getExercisesByDate = (createAt, result) => {
   console.log(createAt);
   const sql = "SELECT * FROM exercises WHERE exercises.create_at = ?";
   db.query(sql, createAt, (err, response) => {
+    if (err) result(err, null);
+    result(null, response);
+  });
+};
+
+Exercise.getExercisesAnalytics = (code, result) => {
+  const sql =
+    "SELECT * FROM exercises WHERE exercises.code = ? ORDER BY exercises.create_at";
+  db.query(sql, code, (err, response) => {
     if (err) result(err, null);
     result(null, response);
   });

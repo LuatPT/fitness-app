@@ -21,144 +21,10 @@ import TextField from '@mui/material/TextField';
 import axios from "axios";
 import CommonAlert from './common/CommonAlert';
 import DateTimePickers from './common/DateTimePickers';
-
-type GymExercise = {
-  id: number,
-  name: string,
-  image: string,
-  amount: number,
-  reps: number,
-  sets: number,
-  price: number,
-  history: Array<History>
-}
-
-type History = {
-  date: string,
-  customerId: string,
-  amount: number,
-}
-
-const Row = (props: { row: ReturnType<typeof GymExercise> }) => {
-  const { row, setAlertInfo } = props;
-    
-  const amountValue = React.useRef();
-  const repsValue = React.useRef();
-  const setValue = React.useRef();
-  const [open, setOpen] = useState(false);
-  const [formData, setFormData] = useState(row);
-
- const updateFormData = (e) => {  
-    e.preventDefault();
-    setFormData({...formData, amount: parseInt(amountValue.current.value), reps: parseInt(repsValue.current.value), sets: parseInt(setValue.current.value) })
-    updateData( {amount: amountValue.current.value, reps: repsValue.current.value, sets: setValue.current.value})
-  }
-
-  const updateData = (formDataValue) => {
-    const exercise = {
-            ...row,
-      amount: formDataValue.amount,
-      reps: formDataValue.reps,
-      sets: formDataValue.sets,
-    }
-    axios({
-      method: 'put',
-      url: 'http://localhost:3002/api/v1/exercises/'+ row.id,
-      data: exercise
-    }).then (() => setAlertInfo({actionType: "UPDATE", color: "success", message: "Update item in "+ row.id+ " successfully !!!" }) )
-  }
-  
-  const deleteFormData = () => {
-    setAlertInfo({actionType: "DELETE", color: "info", message: "Delete item in "+ row.id+ " successfully !!!" })
-    axios({
-      method: 'delete',
-      url: 'http://localhost:3002/api/v1/exercises/'+ row.id
-    }).then (() => setAlertInfo({actionType: "DELETE", color: "info", message: "Delete item in "+ row.id+ " successfully !!!" }) )
-  }
-
-  return (
-    <React.Fragment>
-      <TableRow sx={{ '& > *': { borderBottom: 'unset' } }} onClick={()=> setOpen(!open)}>
-        {/* <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell> */}
-        <TableCell component="th" scope="row">
-          {row.name}
-        </TableCell>
-        <TableCell align="center"><Image src={row.image} alt="Image" width="200px" height="200px"/></TableCell>
-        <TableCell align="right">
-          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.amount} inputRef={amountValue}/>
-        </TableCell>
-        <TableCell align="right">
-          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.reps} inputRef={repsValue}/>
-        </TableCell>
-        <TableCell align="right">
-          <TextField inputProps={{ inputMode: 'numeric'}} defaultValue={formData.sets} inputRef={setValue}/>
-        </TableCell>
-        <TableCell align="right">
-            <IconButton color="primary" aria-label="Update" onClick={updateFormData}>
-              <EditIcon />
-            </IconButton>
-            <IconButton color="secondary" aria-label="Delete" onClick={deleteFormData}>
-               <DeleteIcon />
-            </IconButton>
-        </TableCell>
-      </TableRow>
-      {/* <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Box sx={{ margin: 1 }}>
-              <Typography variant="h6" gutterBottom component="div">
-                History
-              </Typography>
-              <Table size="small" aria-label="purchases">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell align="right">{historyRow.amount}</TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) / 100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
-          </Collapse>
-        </TableCell>
-      </TableRow> */}
-    </React.Fragment>
-  );
- }
-
- const getDateFromNow = (date:Date) =>{
-  const yyyy = date.getFullYear();
-  let mm = date.getMonth() + 1; // Months start at 0!
-  let dd = date.getDate();
-  
-  if (dd < 10) dd = '0' + dd;
-  if (mm < 10) mm = '0' + mm;
-  
-  return yyyy +'-'+ mm + '-'+ dd ;
-}
+import ExerciseModal from './exercise/ExerciseModal';
+import Row from './Row';
+import { apiUrl } from '../utils/constants';
+import { getDateFromNow } from '../utils/commonFunc';
 
 const TableList = () => {
   
@@ -175,8 +41,7 @@ const TableList = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-        const response = await axios.get("http://localhost:3002/api/v1/exercisesByDate?creatAt="+createAt).then((response) =>setExercises(response.data))
-        .then(() => console.log(exercises));
+        const response = await axios.get(apiUrl+"/exercisesByDate?creatAt="+createAt).then((response) =>setExercises(response.data))
     };
     fetchData();
     
