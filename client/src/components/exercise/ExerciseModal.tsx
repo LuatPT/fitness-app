@@ -4,16 +4,18 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
-import { apiUrl } from '../../utils/constants';
-import axios from "axios";
 import ExerciseChart from './ExerciseChart';
+import DateRangePickers from '../common/DateRangePickers';
+import Grid from '@mui/material/Grid';
+import moment from 'moment'
 
 const style = {
   position: 'absolute' as 'absolute',
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: '60%',
+  width: '70%',
+  height: '90%',
   bgcolor: 'background.paper',
   border: '2px solid #000',
   boxShadow: 24,
@@ -21,14 +23,18 @@ const style = {
 };
 
 export default function ExerciseModal(props) {
-  const {open,code, name, handleClose} = props;
-  const [exercises,setExercises] = useState([]);
-  useEffect(() => {
-    const fetchData = async () => {
-        const response = await axios.get(apiUrl+"/exerciseAnalytics/"+code).then((response) =>setExercises(response.data))
-    };
-    fetchData();
-  }, [code]);
+  const {open, codes, name, handleClose} = props;
+  
+  const [dateRange,setDateRange] = useState(
+    [
+      moment().subtract(7, "days").format("YYYY-MM-DD"),
+      moment(new Date()).format("YYYY-MM-DD")
+    ]
+  );
+ 
+  const handleChangeDateRange = (dateRange) => {
+    setDateRange(dateRange)
+  }
 
   return (
       <Modal
@@ -44,9 +50,8 @@ export default function ExerciseModal(props) {
           {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
             Exercise Analyticts
           </Typography> */}
-          <div>
-            <ExerciseChart list={exercises} />
-          </div>
+              <DateRangePickers dateRange={dateRange} handleChangeDateRange={handleChangeDateRange} />
+              <ExerciseChart dateRange={dateRange} codes={codes}/>
         </Box>
       </Modal>
   );

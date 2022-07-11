@@ -8,7 +8,7 @@ var Exercise = function (exercise) {
   this.reps = exercise.reps;
   this.sets = exercise.sets;
   this.user_name = exercise.user_name;
-  this.code = exercise.code;
+  this.codes = exercise.codes;
   this.create_at = exercise.create_at;
 };
 Exercise.getAllExercises = (result) => {
@@ -20,7 +20,6 @@ Exercise.getAllExercises = (result) => {
 };
 
 Exercise.getExercisesByDate = (createAt, result) => {
-  console.log(createAt);
   const sql = "SELECT * FROM exercises WHERE exercises.create_at = ?";
   db.query(sql, createAt, (err, response) => {
     if (err) result(err, null);
@@ -28,13 +27,19 @@ Exercise.getExercisesByDate = (createAt, result) => {
   });
 };
 
-Exercise.getExercisesAnalytics = (code, result) => {
+Exercise.getExercisesAnalytics = (params, result) => {
+  console.log(params);
   const sql =
-    "SELECT * FROM exercises WHERE exercises.code = ? ORDER BY exercises.create_at";
-  db.query(sql, code, (err, response) => {
-    if (err) result(err, null);
-    result(null, response);
-  });
+    "SELECT * FROM exercises WHERE (exercises.create_at BETWEEN ? AND ?) AND exercises.codes = ? ORDER BY exercises.create_at";
+  db.query(
+    sql,
+    [params.dateRange[0], params.dateRange[1], params.codes],
+    (err, response) => {
+      if (err) result(err, null);
+      console.log(response);
+      result(null, response);
+    }
+  );
 };
 
 Exercise.createExercise = (newExercise, result) => {

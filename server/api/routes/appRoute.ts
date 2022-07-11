@@ -16,6 +16,6 @@ module.exports = function (app) {
 
   // Analytics
   app
-    .route("/api/v1/exerciseAnalytics/:code")
-    .get(exerciseCtrl.get_exercises_analytics);
+    .route("/api/v1/exerciseAnalytics")
+    .post(exerciseCtrl.get_exercises_analytics);
 };

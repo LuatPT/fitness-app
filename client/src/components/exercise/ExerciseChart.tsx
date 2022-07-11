@@ -1,71 +1,64 @@
 import React from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-} from 'chart.js';
-
-import { Line } from 'react-chartjs-2';
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
-);
+import { useState, useEffect } from 'react';
+import axios from "axios";
+import { Chart } from "react-google-charts";
+import { apiUrl } from '../../utils/constants';
  
 const ExerciseChart = (props) => {
-  const {list} = props;
+  const {codes,dateRange } = props;
+  const [exercises,setExercises] = useState([]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await axios.post(apiUrl+"/exerciseAnalytics",
+         {
+          codes: codes,
+          dateRange: dateRange
+        }
+      ).then((response) => {setExercises(response.data)
+        console.log(response)
+      })
+    };
+    
+    if(dateRange.length == 2){
+      fetchData();
+    }
+  }, [codes, dateRange]);
+
   const options = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: 'top' as const,
-      },
-      title: {
-        display: true,
-        text: 'Exercise Analytics',
+    chart: {
+      title: "Exercise",
+    },
+    width: 900,
+    height: 400,
+    series: {
+      // Gives each series an axis name that matches the Y-axis below.
+      0: { axis: "Temps" },
+      1: { axis: "Daylight" },
+    },
+    axes: {
+      // Adds labels to each axis; they don't have to match the axis names.
+      y: {
+        Temps: { label: "Temps (Celsius)" },
+        Daylight: { label: "Daylight" },
       },
     },
   };
-  const labels = list?.map((ele) => ele.create_at.substring(0,10));
-  const dataChart = {
-    labels,
-    datasets: [
-      {
-        label: 'Amount(Lbs)',
-        data: list?.map((ele) => ele.amount),
-        borderColor: 'rgb(255, 99, 132)',
-        backgroundColor: 'rgba(255, 99, 132, 0.5)',
-      },
-      // {
-      //   label: 'Rep',
-      //   data: list?.map((ele) => ele.reps),
-      //   borderColor: 'rgb(53, 162, 235)',
-      //   backgroundColor: 'rgba(53, 162, 235, 0.5)',
-      // },
-      // {
-      //   label: 'Set',
-      //   data: list?.map((ele) => ele.sets),
-      //   borderColor: 'rgb(53, 162, 135)',
-      //   backgroundColor: 'rgba(53, 100, 235, 0.5)',
-      // },
-    ],
-  };
 
-  return (
-    <>
-      <Line options={options} data={dataChart} />
-    </>
-  )
+  const dataChart = [
+    [
+      { type: "date", label: "Day" },
+      "Amount",
+      "Set",
+    ],
+    [new Date(2014, 0), -0.5, 5.7],
+    [new Date(2014, 1), 0.4, 8.7],
+  ];
+
+  exercises
+
+  // console.log(exercises);
+  return <Chart chartType="Line" width="100%" height="400px" data={dataChart} options={options}/>
 }
 
 export default ExerciseChart

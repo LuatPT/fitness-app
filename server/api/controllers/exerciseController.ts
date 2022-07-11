@@ -15,7 +15,8 @@ exports.get_exercises_by_date = (req, res) => {
 };
 
 exports.get_exercises_analytics = (req, res) => {
-  Exercise.getExercisesAnalytics(req.params.code, (err, exercises) => {
+  Exercise.getExercisesAnalytics(req.body, (err, exercises) => {
+    // console.log(req.body);
     if (err) res.send(err);
     res.send(exercises);
   });
